@@ -11,6 +11,19 @@ local Config = _G.GAGConfig
 local State = {}
 
 -- ============================================
+-- UTILITY
+-- ============================================
+
+local function Log(message, category)
+    category = category or "INFO"
+    local timestamp = os.date("%H:%M:%S")
+    
+    if Config["Debug"]["Console"] then
+        print(string.format("[%s][%s] %s", timestamp, category, message))
+    end
+end
+
+-- ============================================
 -- INITIALIZATION
 -- ============================================
 
@@ -207,19 +220,6 @@ function MailSystem.Update()
     if MailSystem.ShouldSendNow() then
         MailSystem.SendAllConfiguredItems()
         MailSystem.lastSendTime = os.time()
-    end
-end
-
--- ============================================
--- UTILITY
--- ============================================
-
-function Log(message, category)
-    category = category or "INFO"
-    local timestamp = os.date("%H:%M:%S")
-    
-    if Config["Debug"]["Console"] then
-        print(string.format("[%s][%s] %s", timestamp, category, message))
     end
 end
 

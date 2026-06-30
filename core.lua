@@ -475,20 +475,23 @@ function Core.PlantAll()
         if planted >= #positions then break end
         
         -- Check Plant Plan
+        local skip = false
         local plantPlan = plantingConfig["Plant Plan"]
         if plantPlan[seed.name] then
             local targetCount = plantPlan[seed.name]
             local currentCount = Core.CountPlants(seed.name)
             if currentCount >= targetCount then
                 Log("Plant plan reached for " .. seed.name .. ": " .. currentCount .. "/" .. targetCount, "PLANT")
-                continue
+                skip = true
             end
         end
         
-        local pos = positions[planted + 1]
-        if Core.PlantSeed(seed.name, pos) then
-            planted = planted + 1
-            task.wait(0.3)
+        if not skip then
+            local pos = positions[planted + 1]
+            if Core.PlantSeed(seed.name, pos) then
+                planted = planted + 1
+                task.wait(0.3)
+            end
         end
     end
     

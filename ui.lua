@@ -4,7 +4,6 @@
 -- ============================================
 
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 
 local UISystem = {}
 local Config = _G.GAGConfig

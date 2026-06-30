@@ -41,9 +41,7 @@ local Config = {
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
-local ContentProvider = game:GetService("ContentProvider")
 local Workspace = game:GetService("Workspace")
 
 local LocalPlayer = Players.LocalPlayer
