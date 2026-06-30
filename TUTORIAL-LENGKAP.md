@@ -1,377 +1,390 @@
 # GAG2 Auto Farm - Tutorial Lengkap
 
-> Panduan lengkap dari nol sampai script berjalan sempurna
+> Dari nol sampai bot berjalan 24/7 otomatis
 
 ---
 
 ## Daftar Isi
 
-- [Persiapan](#persiapan)
-- [Langkah 1: Buat Akun Roblox](#langkah-1-buat-akun-roblox)
-- [Langkah 2: Install Executor](#langkah-2-install-executor)
-- [Langkah 3: Setup Script](#langkah-3-setup-script)
-- [Langkah 4: Jalankan Script](#langkah-4-jalankan-script)
-- [Langkah 5: Multi-Bot (10+ Akun)](#langkah-5-multi-bot-10-akun)
+- [Apa Ini?](#apa-ini)
+- [Arsitektur Sistem](#arsitektur-sistem)
+- [Kebutuhan](#kebutuhan)
+- [Langkah 1: Beli Cloud Phone](#langkah-1-beli-cloud-phone)
+- [Langkah 2: Install VMOS Pro](#langkah-2-install-vmos-pro)
+- [Langkah 3: Buat VM di VMOS](#langkah-3-buat-vm-di-vmos)
+- [Langkah 4: Setup Setiap VM](#langkah-4-setup-setiap-vm)
+- [Langkah 5: Install Termux](#langkah-5-install-termux)
+- [Langkah 6: Jalankan Setup](#langkah-6-jalankan-setup)
+- [Langkah 7: Restart & Selesai](#langkah-7-restart--selesai)
+- [Manual Control](#manual-control)
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
 
 ---
 
-## Persiapan
+## Apa Ini?
 
-Sebelum mulai, siapkan hal berikut:
+Sistem otomatis untuk menjalankan **banyak bot GAG2** di **1 cloud phone** dengan **VMOS Pro**.
 
-| Kebutuhan | Keterangan |
-|-----------|------------|
-| **HP Android** | RAM 4GB+ (8GB untuk multi-bot) |
-| **Koneksi Internet** | Stabil, 5 Mbps+ |
+**Kelebihan:**
+- ✅ **Hemat biaya**: 1 cloud phone ($3-5/bulan) untuk 3-5+ bot
+- ✅ **24/7**: Cloud phone selalu hidup
+- ✅ **Otomatis**: Semuanya jalan sendiri setelah restart
+- ✅ **1x setup**: Tidak perlu setup ulang
+
+---
+
+## Arsitektur Sistem
+
+```
+Cloud Phone (1 biaya, 24/7)
+└── Termux (Controller)
+    └── VMOS Pro
+        ├── VM 1 (Bot 1) → Roblox + Script
+        ├── VM 2 (Bot 2) → Roblox + Script
+        ├── VM 3 (Bot 3) → Roblox + Script
+        └── ... (tergantung RAM)
+```
+
+---
+
+## Kebutuhan
+
+| Komponen | Keterangan |
+|----------|------------|
+| **Cloud Phone** | Red Finger, LDCloud, CloudMoon, dll |
 | **Akun Roblox** | 1 akun per bot |
-| **Executor** | Delta, Arceus X, atau Codex |
+| **Akun Google** | Untuk Play Store di VMOS |
+
+**Estimasi Biaya:**
+
+| Item | Biaya |
+|------|-------|
+| Cloud Phone | $3-5/bulan |
+| VMOS Pro | Gratis |
+| Delta Key | Gratis (Zen Bypass) |
+| **Total** | **$3-5/bulan** |
 
 ---
 
-## Langkah 1: Buat Akun Roblox
+## Langkah 1: Beli Cloud Phone
 
-### 1.1 Buat Akun Utama
-
-1. Buka https://www.roblox.com/
-2. Klik **Sign Up**
-3. Isi data:
-   - Username: `NamaAnda`
-   - Password: `PasswordKuat123!`
-   - Tanggal lahir
-4. Klik **Sign Up**
-5. Verifikasi email
-
-### 1.2 Buat Akun Bot (Untuk Multi-Bot)
-
-Ulangi langkah di atas untuk setiap bot yang ingin Anda buat.
-
-**Tips:**
-- Gunakan email berbeda untuk setiap akun
-- Catat username dan password di tempat aman
-- Jangan gunakan akun utama untuk bot
-
----
-
-## Langkah 2: Install Executor
-
-### 2.1 Download Delta Executor
-
-1. Buka browser di HP
-2. Kunjungi: https://delta-executor.com/
-3. Klik **Download**
-4. Tunggu download selesai
-
-### 2.2 Install Delta
-
-1. Buka file APK yang sudah didownload
-2. Klik **Install**
-3. Jika muncul peringatan "Unknown Source":
-   - Buka **Settings** → **Security**
-   - Aktifkan **Unknown Sources**
-4. Tunggu install selesai
-
-### 2.3 Get Key Delta
-
-1. Buka Delta Executor
-2. Klik **Get Key**
-3. Akan muncul link shortener
-4. **Copy link** tersebut
-5. Buka https://izen.lol/ (Zen Bypass)
-6. Paste link → Klik **Bypass**
-7. Selesaikan captcha
-8. **Copy key** yang muncul (contoh: `FREE_62a6863f...`)
-9. Paste key di Delta
-10. Klik **Submit**
-
-**Delta sekarang aktif selama 24 jam.**
-
----
-
-## Langkah 3: Setup Script
-
-### 3.1 Buat Folder Auto-Execute
-
-1. Buka **File Manager** di HP
-2. Buka folder `/storage/emulated/0/`
-3. Cari folder **Delta**
-4. Di dalam folder Delta, cari folder **Autoexecute**
-5. Jika tidak ada, buat folder baru:
-   - Klik **New Folder**
-   - Beri nama `Autoexecute`
-
-### 3.2 Buat File Script
-
-1. Di folder `Autoexecute`, buat file baru:
-   - Klik **New File**
-   - Beri nama `gag2farm.lua`
-
-2. Buka file tersebut dengan text editor
-
-3. Copy-paste kode berikut:
-
-```lua
--- ============================================
--- GAG2 Auto Farm - Delta Auto-Execute
--- ============================================
-
--- Cek apakah game adalah GAG2
-if game.PlaceId ~= 5765122481 then
-    return
-end
-
--- Tunggu game loading
-repeat task.wait() until game:IsLoaded()
-task.wait(5)
-
--- Load script utama
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/main.lua"))()
-```
-
-4. **Save** file
-
-### 3.3 Aktifkan Auto-Execute di Delta
-
-1. Buka Delta Executor
-2. Buka **Settings**
-3. Cari opsi **Auto Execute** atau **Autoexec**
-4. Pastikan **ENABLED**
-
----
-
-## Langkah 4: Jalankan Script
-
-### 4.1 Buka Roblox
-
-1. Buka aplikasi **Roblox**
-2. Login dengan akun bot (bukan akun utama)
-
-### 4.2 Join Game GAG2
-
-1. Cari **"Grow a Garden 2"** di Roblox
-2. Atau buka langsung: https://www.roblox.com/games/97598239454123/Grow-a-Garden-2
-3. Klik **Play**
-
-### 4.3 Script Otomatis Jalan
-
-Setelah game loading:
-1. Script akan otomatis dimuat
-2. Tunggu beberapa detik
-3. Script akan mulai:
-   - Auto harvest tanaman
-   - Auto plant bibit
-   - Auto sell hasil panen
-   - Auto beli gear/pet
-   - Auto kirim mail
-
-### 4.4 Cek Status
-
-Script akan menampilkan log di console:
-
-```
-[*] GAG2 Auto Farm v1.0.0
-[*] Loading config...
-[*] Loading modules...
-[*] All modules loaded!
-[*] Starting main farm loop...
-[12:34:56][HARVEST] Harvested 5 plants
-[12:34:57][SELL] Sold all items
-[12:34:58][PLANT] Planted 3 seeds
-```
-
-### 4.5 Quick Commands
-
-Setelah script jalan, Anda bisa gunakan command ini di console:
-
-```lua
-_G.GAG.start()    -- Start farm
-_G.GAG.stop()     -- Stop farm
-_G.GAG.toggle()   -- Toggle farm
-_G.GAG.sell()     -- Sell all items
-_G.GAG.harvest()  -- Harvest all plants
-_G.GAG.stats()    -- Show stats
-```
-
----
-
-## Langkah 5: Multi-Bot (10+ Akun)
-
-### 5.1 Opsi A: VMOS Pro (HP RAM 8GB+)
-
-#### Install VMOS Pro
-
-1. Download VMOS Pro: https://www.vmos.com/
-2. Install di HP
-3. Buka VMOS Pro
-4. Buat VM baru (Android 10)
-
-#### Setup Setiap VM
-
-Untuk setiap VM:
-
-1. Buka **Play Store** di VM
-2. Install **Roblox**
-3. Install **Delta Executor**
-4. Login akun bot
-5. Setup script (Langkah 3)
-6. Join GAG2
-
-#### Struktur
-
-```
-HP Anda
-├── VMOS VM 1 (Bot 1 + Delta + Script)
-├── VMOS VM 2 (Bot 2 + Delta + Script)
-├── VMOS VM 3 (Bot 3 + Delta + Script)
-└── VMOS VM 4 (Bot 4 + Delta + Script)
-```
-
-### 5.2 Opsi B: Cloud Phone (Tanpa HP)
-
-#### Beli Cloud Phone
+### Pilih Provider
 
 | Provider | Harga/bulan | Link |
 |----------|-------------|------|
 | **Red Finger** | $3-5 | https://www.redfinger.com/ |
 | **LDCloud** | $2-4 | https://www.ldcloud.com/ |
 | **CloudMoon** | $3-5 | https://www.cloudmoon.com/ |
+| **OonDroid** | $2-4 | https://www.oondroid.com/ |
 
-#### Setup Cloud Phone
+### Spesifikasi yang Dibutuhkan
 
-Untuk setiap cloud phone:
+| Komponen | Minimum | Rekomendasi |
+|----------|---------|-------------|
+| **RAM** | 4GB | 8GB |
+| **Storage** | 32GB | 64GB |
+| **Android** | 8.0 | 10+ |
 
-1. Buka cloud phone
-2. Install **Roblox** dari Play Store
-3. Install **Delta Executor**
-4. Login akun bot
-5. Setup script (Langkah 3)
-6. Join GAG2
+**Catatan:** RAM 8GB bisa jalankan 3-5 VM.
 
-### 5.3 Opsi C: Optimizer (Hemat Resource)
+### Cara Beli (Contoh: Red Finger)
 
-Untuk HP dengan RAM terbatas, gunakan optimizer:
+1. Buka https://www.redfinger.com/
+2. Daftar akun
+3. Klik "Buy Device"
+4. Pilih paket (disarankan RAM 8GB)
+5. Bayar
+6. Tunggu cloud phone aktif
 
-#### Edit Script Auto-Execute
+---
 
-Ganti isi file `gag2farm.lua` dengan:
+## Langkah 2: Install VMOS Pro
 
-```lua
--- Cek game
-if game.PlaceId ~= 5765122481 then
-    return
-end
+### Download VMOS Pro
 
--- Tunggu game load
-repeat task.wait() until game:IsLoaded()
-task.wait(5)
+1. Buka browser di cloud phone
+2. Kunjungi: https://www.vmos.com/
+3. Download **VMOS Pro**
+4. Install APK
+5. Buka VMOS Pro
+6. Tunggu loading pertama (2-5 menit)
 
--- Optimizer
-pcall(function() setfpscap(15) end)
-pcall(function() game:GetService("RunService"):Set3dRenderingEnabled(false) end)
+### Verifikasi
 
-local Lighting = game:GetService("Lighting")
-Lighting.GlobalShadows = false
-Lighting.FogEnd = 0
-Lighting.Brightness = 0
+Pastikan VMOS Pro sudah terbuka dan menampilkan halaman utama.
 
-for _, effect in pairs(Lighting:GetDescendants()) do
-    if effect:IsA("PostEffect") then effect:Destroy() end
-end
+---
 
-for _, obj in pairs(workspace:GetDescendants()) do
-    if obj:IsA("ParticleEmitter") or obj:IsA("Fire") or obj:IsA("Smoke") or
-       obj:IsA("Sound") or obj:IsA("Decal") or obj:IsA("Texture") then
-        obj:Destroy()
-    end
-end
+## Langkah 3: Buat VM di VMOS
 
-spawn(function()
-    while true do
-        wait(30)
-        collectgarbage("collect")
-    end
-end)
+### Buat VM Pertama
 
--- Load farm script
-task.wait(2)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/main.lua"))()
+1. Buka VMOS Pro
+2. Klik **"Add VM"** atau tombol **"+"**
+3. Pilih pengaturan:
+   - **Android Version:** 10
+   - **RAM:** 2GB
+   - **Storage:** 8GB
+4. Klik **"Create"** atau **"Add"**
+5. Tunggu proses selesai (5-10 menit)
+
+### Buat VM Lainnya
+
+Ulangi langkah di atas untuk membuat VM tambahan:
+
+| RAM Cloud Phone | Jumlah VM | RAM per VM |
+|-----------------|-----------|------------|
+| 4GB | 1-2 VM | 2GB |
+| 6GB | 2-3 VM | 2GB |
+| 8GB | 3-5 VM | 2GB |
+| 12GB | 5-8 VM | 2GB |
+
+**Tips:** Jangan buat terlalu banyak VM. Sesuaikan dengan RAM cloud phone.
+
+---
+
+## Langkah 4: Setup Setiap VM
+
+Untuk **setiap VM**, lakukan langkah berikut:
+
+### 4.1 Buka VM
+
+1. Klik VM yang sudah dibuat
+2. Tunggu VM loading (1-2 menit)
+
+### 4.2 Login Google
+
+1. Buka **Play Store**
+2. Login dengan akun Google
+3. Jika tidak punya, buat akun baru
+
+### 4.3 Install Roblox
+
+1. Cari **"Roblox"** di Play Store
+2. Klik **"Install"**
+3. Tunggu install selesai
+
+### 4.4 Install Delta Executor
+
+1. Buka browser di VM
+2. Download Delta: https://delta-executor.com/
+3. Install APK
+4. Buka Delta
+5. **Get Key** (pakai Zen Bypass: https://izen.lol/)
+6. Paste key
+7. Delta aktif
+
+### 4.5 Login Akun Roblox
+
+1. Buka **Roblox**
+2. Login dengan akun bot
+3. Pastikan berhasil masuk
+
+### 4.6 Ulangi untuk Setiap VM
+
+Ulangi langkah 4.1 - 4.5 untuk setiap VM yang sudah dibuat.
+
+---
+
+## Langkah 5: Install Termux
+
+### Download Termux
+
+1. Buka browser di cloud phone
+2. Download: https://f-droid.org/repo/com.termux_1002.apk
+3. Install APK
+
+### Install Termux:Boot
+
+1. Download: https://f-droid.org/repo/com.termux.boot_1000.apk
+2. Install APK
+3. **Buka Termux:Boot sekali** (untuk register)
+
+### Setup Termux
+
+1. Buka **Termux**
+2. Jalankan perintah berikut:
+
+```bash
+termux-setup-storage
+pkg update && pkg upgrade
+pkg install lua53 python git wget curl
 ```
 
-**Efek:** Grafis akan hilang, tapi script tetap jalan dan lebih ringan.
+---
+
+## Langkah 6: Jalankan Setup
+
+Di Termux, jalankan perintah berikut:
+
+```bash
+cd /sdcard/Download
+wget https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/setup-cloud-vmos.sh
+chmod +x setup-cloud-vmos.sh
+./setup-cloud-vmos.sh
+```
+
+Script akan otomatis:
+1. Install dependencies
+2. Download scripts
+3. Setup Termux:Boot
+4. Buat control scripts
+
+---
+
+## Langkah 7: Restart & Selesai
+
+### Restart Cloud Phone
+
+1. Restart cloud phone
+2. Tunggu 30-60 detik
+3. Termux:Boot akan otomatis jalan
+4. Script akan:
+   - Buka VMOS
+   - Buka setiap VM
+   - Buka Roblox di setiap VM
+   - Join game GAG2
+   - Jalankan farming script
+
+### Verifikasi
+
+Setelah restart, cek apakah:
+- [ ] VMOS sudah terbuka
+- [ ] Setiap VM sudah terbuka
+- [ ] Roblox sudah jalan di setiap VM
+- [ ] Script sudah berjalan
+
+---
+
+## Manual Control
+
+Jika perlu kontrol manual, buka Termux:
+
+```bash
+cd /sdcard/Download/gag2-cloud-vmos
+```
+
+### Perintah yang Tersedia
+
+| Perintah | Fungsi |
+|----------|--------|
+| `./start.sh` | Start semua VM |
+| `./stop.sh` | Stop semua VM |
+| `./restart.sh` | Restart semua VM |
+| `./status.sh` | Cek status |
+
+### Atau Pakai Menu Interaktif
+
+```bash
+lua cloud-vmos-controller.lua
+```
+
+Akan muncul menu:
+
+```
+========================================
+  MENU
+========================================
+  [1] Boot sequence (otomatis semua)
+  [2] Start semua VM
+  [3] Stop semua VM
+  [4] Restart semua VM
+  [5] Monitor loop
+  [6] Status
+  [7] Set jumlah VM
+  [8] Setup Delta auto-execute
+  [0] Exit
+========================================
+```
 
 ---
 
 ## Troubleshooting
 
-### Script Tidak Jalan
+### VMOS Tidak Muncul
 
 | Masalah | Solusi |
 |---------|--------|
-| Script tidak muncul | Pastikan file di folder `Autoexecute` yang benar |
-| Error loading | Cek koneksi internet |
-| "Http requests not allowed" | Aktifkan http requests di executor settings |
-| Game bukan GAG2 | Script hanya jalan di Place ID 5765122481 |
+| VMOS crash | Kurangi jumlah VM |
+| VMOS lambat | Kurangi RAM per VM |
+| VMOS tidak buka | Install ulang VMOS |
 
-### Delta Tidak Bisa Dipakai
+### Roblox Tidak Jalan
 
 | Masalah | Solusi |
 |---------|--------|
-| Key expired | Get key baru (ulangi Langkah 2.3) |
-| Key tidak work | Coba key baru atau pakai Zen Bypass |
-| Delta crash | Update ke versi terbaru |
-| HWID error | Key hanya work di 1 device |
+| Roblox crash | Update Roblox ke versi terbaru |
+| Tidak bisa join game | Cek koneksi internet |
+| Script tidak jalan | Pastikan Delta aktif |
 
 ### Script Error
 
 | Masalah | Solusi |
 |---------|--------|
-| "attempt to index nil" | Tunggu game loading lebih lama |
-| "Remote not found" | Nama remote mungkin berubah, perlu update script |
-| Script berhenti | Restart game dan jalankan ulang |
-| Crash | Kurangi FPS cap di config |
+| Script tidak muncul | Cek Delta auto-execute |
+| Error loading | Cek koneksi internet |
+| Script berhenti | Restart VM |
+
+### Cloud Phone
+
+| Masalah | Solusi |
+|---------|--------|
+| Tidak auto-start | Pastikan Termux:Boot terinstall |
+| Lambat | Kurangi jumlah VM |
+| Sering crash | Ganti provider cloud phone |
 
 ---
 
 ## FAQ
 
-### T: Apakah script ini aman?
+### T: Berapa bot yang bisa dijalankan?
 
-**A:** Script ini menggunakan RemoteEvents yang ada di game, bukan exploit. Tapi tetap ada risiko kecil terdeteksi.
+**A:** Tergantung RAM cloud phone:
+- 4GB: 1-2 bot
+- 8GB: 3-5 bot
+- 12GB: 5-8 bot
 
 ### T: Apakah butuh root?
 
-**A:** Tidak. Script ini jalan tanpa root.
+**A:** Tidak. Semuanya berjalan tanpa root.
 
-### T: Berapa akun yang bisa dijalankan?
+### T: Apakah aman?
 
-**A:** Tergantung RAM HP:
-- 4GB RAM: 1-2 akun
-- 8GB RAM: 3-5 akun (dengan optimizer)
-- 12GB+ RAM: 5-10 akun
+**A:** Ya. Script hanya menjalankan farming otomatis. Tidak ada exploit.
 
-### T: Apakah bisa di PC?
+### T: Berapa biaya per bulan?
 
-**A:** Bisa, pakai emulator Android seperti BlueStacks atau LDPlayer.
+**A:** $3-5/bulan untuk cloud phone. Semuanya gratis.
 
-### T: Bagaimana cara update script?
+### T: Apakah bisa di HP sendiri (bukan cloud)?
 
-**A:** Script otomatis update dari GitHub. Tapi jika ada error, download ulang dari: https://github.com/fannyf123/GAG2-Farm
+**A:** Bisa. Tapi HP harus selalu hidup dan terhubung internet.
 
-### T: Apakah butuh Delta?
+### T: Bagaimana cara menambah bot?
 
-**A:** Tidak harus. Bisa pakai executor lain:
-- Arceus X (no key)
-- Codex (no key)
-- FluxusZ (no key)
+**A:** 
+1. Buka VMOS Pro
+2. Buat VM baru
+3. Setup VM (Roblox + Delta + Login)
+4. Restart cloud phone
 
-### T: Berapa lama key Delta bertahan?
+### T: Bagaimana cara menghapus bot?
 
-**A:** 24 jam. Setelah itu perlu get key baru.
+**A:**
+1. Buka VMOS Pro
+2. Hapus VM yang tidak diperlukan
+3. Restart cloud phone
 
-### T: Apakah bisa auto-rejoin?
+---
 
-**A:** Belum ada fitur auto-rejoin di script ini. Tapi bisa ditambahkan.
+## Estimasi Biaya
+
+| Setup | Biaya/bulan |
+|-------|-------------|
+| 1 Cloud Phone (3-5 bot) | $3-5 |
+| 5 Cloud Phone (5 bot) | $20 |
+| **Hemat dengan VMOS** | **$15-17** |
 
 ---
 
@@ -380,10 +393,12 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/m
 | Resource | Link |
 |----------|------|
 | **Script GAG2 Farm** | https://github.com/fannyf123/GAG2-Farm |
+| **Setup Script** | https://github.com/fannyf123/GAG2-Farm/blob/main/setup-cloud-vmos.sh |
+| **VMOS Pro** | https://www.vmos.com/ |
 | **Delta Executor** | https://delta-executor.com/ |
 | **Zen Bypass** | https://izen.lol/ |
-| **VMOS Pro** | https://www.vmos.com/ |
-| **GAG2 Game** | https://www.roblox.com/games/97598239454123/Grow-a-Garden-2 |
+| **Termux** | https://f-droid.org/repo/com.termux_1002.apk |
+| **Termux:Boot** | https://f-droid.org/repo/com.termux.boot_1000.apk |
 
 ---
 
@@ -391,11 +406,16 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/m
 
 Sebelum mulai, pastikan:
 
-- [ ] Sudah punya akun Roblox
-- [ ] Sudah install executor (Delta/Arceus X/Codex)
-- [ ] Sudah get key (jika pakai Delta)
-- [ ] Sudah buat file script di folder autoexecute
-- [ ] Sudah join game GAG2
+- [ ] Sudah beli cloud phone
+- [ ] Sudah install VMOS Pro
+- [ ] Sudah buat VM (3-5 VM)
+- [ ] Sudah install Roblox di setiap VM
+- [ ] Sudah install Delta di setiap VM
+- [ ] Sudah login akun Roblox di setiap VM
+- [ ] Sudah install Termux
+- [ ] Sudah install Termux:Boot
+- [ ] Sudah jalankan setup script
+- [ ] Sudah restart cloud phone
 
 ---
 
