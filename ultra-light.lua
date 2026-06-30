@@ -12,11 +12,11 @@ local Config = {
     -- Ultra Settings
     FPS = 10,                     -- FPS sangat rendah
     RemoveEverything = true,      -- Hapus semua yang tidak perlu
-    MinimalRendering = true,      // Render minimal
-    DisableAllEffects = true,     // Matikan semua efek
-    RemoveAllSounds = true,       // Hapus semua suara
-    RemoveAllUI = true,           // Hapus semua UI kecuali script
-    ReduceMemory = true,          // Minimalisir memory
+    MinimalRendering = true,      -- Render minimal
+    DisableAllEffects = true,     -- Matikan semua efek
+    RemoveAllSounds = true,       -- Hapus semua suara
+    RemoveAllUI = true,           -- Hapus semua UI kecuali script
+    ReduceMemory = true,          -- Minimalisir memory
 }
 
 -- ============================================
@@ -25,6 +25,8 @@ local Config = {
 
 local function DisableAllRendering()
     print("[UltraLight] Disabling all rendering...")
+    
+    local RunService = game:GetService("RunService")
     
     -- Matikan 3D rendering
     pcall(function()

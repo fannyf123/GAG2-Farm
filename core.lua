@@ -351,35 +351,33 @@ function Core.GetPlantableSeeds()
     for _, item in pairs(backpack:GetChildren()) do
         if item.Name:find("Seed") then
             local seedName = item.Name:gsub(" Seed", "")
+            local skip = false
             
             -- Check minimum seed
             if minSeed ~= "" then
                 -- This is a simplified check - in reality you'd need a seed tier list
                 local cheapSeeds = {"Carrot", "Strawberry", "Blueberry", "Tomato"}
-                local isCheap = false
                 for _, cheap in ipairs(cheapSeeds) do
                     if seedName == cheap then
-                        isCheap = true
+                        Log("Skipping cheap seed: " .. seedName, "PLANT")
+                        skip = true
                         break
                     end
-                end
-                if isCheap then
-                    Log("Skipping cheap seed: " .. seedName, "PLANT")
-                    continue
                 end
             end
             
             -- Check Don't Plant list
-            local skip = false
-            for _, name in ipairs(plantingConfig["Don't Plant"]) do
-                if seedName:find(name) then
-                    skip = true
-                    break
+            if not skip then
+                for _, name in ipairs(plantingConfig["Don't Plant"]) do
+                    if seedName:find(name) then
+                        skip = true
+                        break
+                    end
                 end
             end
             
             -- Check Only Plant list
-            if #plantingConfig["Only Plant"] > 0 then
+            if not skip and #plantingConfig["Only Plant"] > 0 then
                 local found = false
                 for _, name in ipairs(plantingConfig["Only Plant"]) do
                     if seedName:find(name) then

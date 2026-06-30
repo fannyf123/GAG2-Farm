@@ -223,6 +223,7 @@ function MovementSystem.CollectPets()
         return
     end
     
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local petsFolder = workspace:FindFirstChild("Pets") or workspace:FindFirstChild("PetArea")
     if not petsFolder then
         return
@@ -267,6 +268,7 @@ function MovementSystem.CollectEventSeeds()
         return
     end
     
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local seedsFolder = workspace:FindFirstChild("EventSeeds") or workspace:FindFirstChild("Seeds")
     if not seedsFolder then
         return
