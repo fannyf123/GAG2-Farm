@@ -5,7 +5,7 @@
 -- Cocok untuk multi-instance
 
 -- Cek game
-if game.PlaceId ~= 5765122481 then
+if game.PlaceId ~= 97598239454123 then
     return
 end
 
@@ -69,4 +69,4 @@ print("[*] Loading GAG2 Farm...")
 
 task.wait(2)
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/main.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/main.lua"))()

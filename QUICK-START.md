@@ -48,7 +48,7 @@ pkg update && pkg upgrade && pkg install lua53
 
 ```bash
 cd /sdcard/Download
-wget https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/setup-cloud-vmos.sh
+wget https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/setup-cloud-vmos.sh
 chmod +x setup-cloud-vmos.sh
 ./setup-cloud-vmos.sh
 ```

@@ -22,8 +22,8 @@ local IS_TERMUX = not IS_ROBLOX
 
 -- SHARED CONFIG
 local SharedConfig = {
-    place_id = 5765122481,
-    script_url = "https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua",
+    place_id = 97598239454123,
+    script_url = "https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua",
     webhook_url = "",
     num_vms = 3,
     boot_delay = 30,

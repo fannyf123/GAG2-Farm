@@ -26,8 +26,8 @@ cd /sdcard/Download
 mkdir -p gag2-auto-start
 cd gag2-auto-start
 
-wget -O auto-start.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/auto-start.lua
-wget -O gag2-all-in-one.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua
+wget -O auto-start.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/auto-start.lua
+wget -O gag2-all-in-one.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua
 
 # 4. Setup Termux:Boot
 echo "[4/6] Setting up Termux:Boot..."
@@ -54,7 +54,7 @@ mkdir -p /storage/emulated/0/Delta/Autoexecute
 
 cat > /storage/emulated/0/Delta/Autoexecute/gag2farm.lua << 'EOF'
 -- GAG2 Auto Farm - Delta Auto-Execute
-if game.PlaceId ~= 5765122481 then
+if game.PlaceId ~= 97598239454123 then
     return
 end
 
@@ -90,7 +90,7 @@ end)
 
 -- Load farm script
 task.wait(2)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua"))()
 EOF
 
 # 6. Create start/stop scripts

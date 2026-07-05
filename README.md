@@ -91,7 +91,7 @@ _G.GAGConfig = {
 
 ### Load Script
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/main.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/main.lua"))()
 ```
 
 ### Quick Commands

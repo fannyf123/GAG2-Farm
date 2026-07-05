@@ -422,7 +422,7 @@ local function Main()
     task.wait(2)
     Log("Loading GAG2 Farm script...")
     
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/main.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/main.lua"))()
 end
 
 -- Run

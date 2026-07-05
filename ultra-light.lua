@@ -322,7 +322,7 @@ local function Main()
     
     -- Load optimizer + GAG2 Farm
     print("[UltraLight] Loading optimizer...")
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/optimizer.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/optimizer.lua"))()
 end
 
 -- Jalankan

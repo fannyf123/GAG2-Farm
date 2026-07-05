@@ -32,7 +32,7 @@ local IS_TERMUX = not IS_ROBLOX
 
 local SharedConfig = {
     -- Game
-    place_id = 5765122481,
+    place_id = 97598239454123,
     game_url = "https://www.roblox.com/games/97598239454123/Grow-a-Garden-2",
     
     -- Discord Webhook (opsional)

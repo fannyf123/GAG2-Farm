@@ -10,7 +10,7 @@
 
 local Config = {
     -- Game
-    place_id = 5765122481,
+    place_id = 97598239454123,
     
     -- Delay (detik)
     boot_delay = 30,           -- Tunggu setelah boot
@@ -23,7 +23,7 @@ local Config = {
     restart_on_crash = true,   -- Restart jika crash
     
     -- Script URL
-    script_url = "https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua",
+    script_url = "https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua",
 }
 
 -- ============================================
@@ -112,7 +112,7 @@ local function SetupDeltaAutoStart()
     local autoexec_path = "/storage/emulated/0/Delta/Autoexecute/gag2farm.lua"
     local script_content = [[
 -- GAG2 Auto Farm - Auto-Execute
-if game.PlaceId ~= 5765122481 then
+if game.PlaceId ~= 97598239454123 then
     return
 end
 
@@ -148,7 +148,7 @@ end)
 
 -- Load farm script
 task.wait(2)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua"))()
 ]]
     
     -- Tulis file

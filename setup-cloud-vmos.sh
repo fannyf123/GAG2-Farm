@@ -25,8 +25,8 @@ cd /sdcard/Download
 mkdir -p gag2-cloud-vmos
 cd gag2-cloud-vmos
 
-wget -O cloud-vmos-controller.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/cloud-vmos-controller.lua
-wget -O gag2-all-in-one.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua
+wget -O cloud-vmos-controller.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/cloud-vmos-controller.lua
+wget -O gag2-all-in-one.lua https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua
 
 # 4. Setup Termux:Boot
 echo "[4/5] Setting up Termux:Boot..."

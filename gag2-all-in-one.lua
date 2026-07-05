@@ -5,7 +5,7 @@
 -- Copy paste ke executor langsung bisa
 
 -- Cek game
-if game.PlaceId ~= 5765122481 then
+if game.PlaceId ~= 97598239454123 then
     return
 end
 

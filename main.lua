@@ -10,12 +10,14 @@ print([[
 ╚═══════════════════════════════════════════════════════════════╝
 ]])
 
+local Players = game:GetService("Players")
+
 -- ============================================
 -- LOAD CONFIG
 -- ============================================
 
 print("[*] Loading config...")
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/config.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/config.lua"))()
 
 -- ============================================
 -- LOAD MODULES
@@ -27,27 +29,27 @@ local modules = {}
 
 -- Core Engine
 print("  [1/6] Core Engine...")
-modules.core = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/core.lua"))()
+modules.core = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/core.lua"))()
 
 -- Pet System
 print("  [2/6] Pet System...")
-modules.pets = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/pets.lua"))()
+modules.pets = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/pets.lua"))()
 
 -- Gear System
 print("  [3/6] Gear System...")
-modules.gear = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gear.lua"))()
+modules.gear = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gear.lua"))()
 
 -- Mail System
 print("  [4/6] Mail System...")
-modules.mail = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/mail.lua"))()
+modules.mail = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/mail.lua"))()
 
 -- Movement System
 print("  [5/6] Movement System...")
-modules.movement = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/movement.lua"))()
+modules.movement = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/movement.lua"))()
 
 -- UI System
 print("  [6/6] UI System...")
-modules.ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/ui.lua"))()
+modules.ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/ui.lua"))()
 
 print("[*] All modules loaded!")
 
@@ -90,8 +92,8 @@ local function ApplyPerformanceSettings()
     local perfConfig = _G.GAGConfig["Performance"]
     
     -- FPS Cap
-    if perfConfig["FPS Cap"] > 0 then
-        setfpscap(perfConfig["FPS Cap"])
+    if perfConfig["FPS Cap"] > 0 and typeof(setfpscap) == "function" then
+        pcall(setfpscap, perfConfig["FPS Cap"])
         print("[*] FPS cap set to: " .. perfConfig["FPS Cap"])
     end
     
@@ -192,7 +194,7 @@ end
 ApplyPerformanceSettings()
 
 -- Start main loop
-MainLoop()
+task.spawn(MainLoop)
 
 -- ============================================
 -- QUICK COMMANDS

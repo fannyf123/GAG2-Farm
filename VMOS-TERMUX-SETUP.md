@@ -147,7 +147,7 @@ File: `/storage/emulated/0/Delta/Autoexecute/gag2farm.lua`
 
 ```lua
 -- GAG2 Auto Farm
-if game.PlaceId ~= 5765122481 then
+if game.PlaceId ~= 97598239454123 then
     return
 end
 
@@ -160,7 +160,7 @@ pcall(function() game:GetService("RunService"):Set3dRenderingEnabled(false) end)
 
 -- Load farm script
 task.wait(2)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua"))()
 ```
 
 ---

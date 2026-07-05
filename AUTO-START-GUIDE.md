@@ -48,7 +48,7 @@ Di Termux:
 
 ```bash
 cd /sdcard/Download
-wget https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/setup-boot.sh
+wget https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/setup-boot.sh
 chmod +x setup-boot.sh
 ./setup-boot.sh
 ```

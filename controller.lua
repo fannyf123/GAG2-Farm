@@ -39,7 +39,7 @@ local Config = {
     monitor_interval = 60,
     reconnect_delay = 30,
     webhook_url = "",
-    place_id = 5765122481,
+    place_id = 97598239454123,
 }
 
 -- ============================================

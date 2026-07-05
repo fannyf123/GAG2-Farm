@@ -14,7 +14,7 @@ local Config = {
     num_vms = 3,  -- Sesuaikan dengan jumlah VM yang sudah dibuat
     
     -- Game
-    place_id = 5765122481,
+    place_id = 97598239454123,
     
     -- Delays (detik)
     boot_delay = 30,           -- Tunggu setelah boot
@@ -29,7 +29,7 @@ local Config = {
     restart_on_crash = true,   -- Restart jika crash
     
     -- Script URL
-    script_url = "https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua",
+    script_url = "https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua",
 }
 
 -- ============================================
@@ -141,7 +141,7 @@ local function InjectScriptToVM()
     -- Buat file auto-execute di VM
     local script_content = [[
 -- GAG2 Auto Farm - Auto-Execute
-if game.PlaceId ~= 5765122481 then
+if game.PlaceId ~= 97598239454123 then
     return
 end
 
@@ -177,7 +177,7 @@ end)
 
 -- Load farm script
 task.wait(2)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua"))()
 ]]
     
     -- Simpan di clipboard untuk paste
@@ -208,7 +208,7 @@ local function SetupDeltaInVM()
     -- Tulis script
     local script_content = [[
 -- GAG2 Auto Farm
-if game.PlaceId ~= 5765122481 then
+if game.PlaceId ~= 97598239454123 then
     return
 end
 
@@ -242,7 +242,7 @@ spawn(function()
 end)
 
 task.wait(2)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/main/gag2-all-in-one.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fannyf123/GAG2-Farm/master/gag2-all-in-one.lua"))()
 ]]
     
     local file = io.open("/storage/emulated/0/Delta/Autoexecute/gag2farm.lua", "w")
