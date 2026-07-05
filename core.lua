@@ -76,7 +76,6 @@ local function GetCharacter()
 end
 
 local function GetGarden()
-    -- Find player's garden/plot
     local gardens = Workspace:FindFirstChild("Gardens") or Workspace:FindFirstChild("Farms")
     if not gardens then
         gardens = Workspace
@@ -84,7 +83,9 @@ local function GetGarden()
     
     for _, garden in pairs(gardens:GetChildren()) do
         local owner = garden:FindFirstChild("Owner")
-        if owner and owner.Value == State.player.Name then
+        local ownerName = garden:GetAttribute("Owner")
+        local ownerUserId = garden:GetAttribute("OwnerUserId")
+        if (owner and owner.Value == State.player.Name) or ownerName == State.player.Name or ownerUserId == State.player.UserId then
             State.garden = garden
             State.plot = garden:FindFirstChild("Plot") or garden
             return garden
@@ -194,18 +195,22 @@ function Core.ShouldHarvest(plant)
         end
     end
     
-    -- Check if plant is ready to harvest
     local ready = plant:FindFirstChild("ReadyToHarvest") or plant:FindFirstChild("Ready")
     if ready and ready.Value then
         return true
     end
     
-    -- Check growth stage
     local growth = plant:FindFirstChild("Growth") or plant:FindFirstChild("GrowthStage")
     if growth and growth.Value >= 100 then
         return true
     end
     
+    for _, obj in pairs(plant:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") and obj.ActionText == "Harvest" then
+            return true
+        end
+    end
+
     return false
 end
 
@@ -215,7 +220,13 @@ function Core.HarvestPlant(plant)
     local plantName = plant.Name
     Log("Harvesting: " .. plantName, "HARVEST")
     
-    -- Try different harvest methods
+    for _, obj in pairs(plant:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") and obj.ActionText == "Harvest" and typeof(fireproximityprompt) == "function" then
+            fireproximityprompt(obj)
+            return true
+        end
+    end
+
     local harvestRemote = ReplicatedStorage:FindFirstChild("HarvestPlant") 
         or ReplicatedStorage:FindFirstChild("Harvest")
         or ReplicatedStorage:FindFirstChild("CollectPlant")
