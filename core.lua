@@ -728,6 +728,29 @@ function Core.ReplaceLowValue()
     end
 end
 
+function Core.CollectDroppedFruit()
+    local dropped = Workspace:FindFirstChild("DroppedItems")
+    if not dropped or typeof(fireproximityprompt) ~= "function" then return 0 end
+
+    local collected = 0
+    for _, item in pairs(dropped:GetChildren()) do
+        if item:GetAttribute("ItemCategory") == "HarvestedFruits" then
+            local prompt = item:FindFirstChild("PickupPrompt", true)
+            if prompt and prompt:IsA("ProximityPrompt") then
+                fireproximityprompt(prompt)
+                collected = collected + 1
+                task.wait(0.15)
+            end
+        end
+    end
+
+    if collected > 0 then
+        Log("Picked up " .. collected .. " dropped fruits", "PICKUP")
+    end
+
+    return collected
+end
+
 -- ============================================
 -- MAIN LOOP
 -- ============================================
@@ -760,6 +783,9 @@ function Core.Update()
     
     -- Harvest
     Core.HarvestAll()
+
+    -- Pickup dropped fruits
+    Core.CollectDroppedFruit()
     
     -- Sell
     if Core.ShouldSell() then
