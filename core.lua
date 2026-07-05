@@ -351,43 +351,75 @@ end
 -- PLANT SYSTEM
 -- ============================================
 
+local SeedNames = {
+    Carrot = true,
+    Strawberry = true,
+    Blueberry = true,
+    Tulip = true,
+    Tomato = true,
+    Apple = true,
+    Bamboo = true,
+    Corn = true,
+    Cactus = true,
+    Pineapple = true,
+    Mushroom = true,
+    ["Green Bean"] = true
+}
+
+local function GetSeedName(toolName)
+    return toolName:gsub(" Seed$", "")
+end
+
+local function IsSeedTool(item)
+    if not item:IsA("Tool") or item.Name:find(":") then
+        return false
+    end
+
+    return SeedNames[GetSeedName(item.Name)] == true
+end
+
+local function GetPlantController()
+    local playerScripts = State.player:FindFirstChild("PlayerScripts")
+    local controllers = playerScripts and playerScripts:FindFirstChild("Controllers")
+    local module = controllers and controllers:FindFirstChild("PlantController")
+    if not module then return nil end
+
+    local success, controller = pcall(require, module)
+    if success then
+        return controller
+    end
+
+    return nil
+end
+
+local function EquipSeed(seed)
+    local character = State.player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if humanoid and seed.item and seed.item.Parent == State.player:FindFirstChild("Backpack") then
+        humanoid:EquipTool(seed.item)
+        task.wait(0.5)
+    end
+end
+
 function Core.GetPlantableSeeds()
     local seeds = {}
     local backpack = State.player:FindFirstChild("Backpack")
     if not backpack then return seeds end
-    
+
     local plantingConfig = Config["Planting"]
-    local minSeed = plantingConfig["Minimum Seed"]
-    
+
     for _, item in pairs(backpack:GetChildren()) do
-        if item.Name:find("Seed") then
-            local seedName = item.Name:gsub(" Seed", "")
+        if IsSeedTool(item) then
+            local seedName = GetSeedName(item.Name)
             local skip = false
-            
-            -- Check minimum seed
-            if minSeed ~= "" then
-                -- This is a simplified check - in reality you'd need a seed tier list
-                local cheapSeeds = {"Carrot", "Strawberry", "Blueberry", "Tomato"}
-                for _, cheap in ipairs(cheapSeeds) do
-                    if seedName == cheap then
-                        Log("Skipping cheap seed: " .. seedName, "PLANT")
-                        skip = true
-                        break
-                    end
+
+            for _, name in ipairs(plantingConfig["Don't Plant"]) do
+                if seedName:find(name) then
+                    skip = true
+                    break
                 end
             end
-            
-            -- Check Don't Plant list
-            if not skip then
-                for _, name in ipairs(plantingConfig["Don't Plant"]) do
-                    if seedName:find(name) then
-                        skip = true
-                        break
-                    end
-                end
-            end
-            
-            -- Check Only Plant list
+
             if not skip and #plantingConfig["Only Plant"] > 0 then
                 local found = false
                 for _, name in ipairs(plantingConfig["Only Plant"]) do
@@ -398,13 +430,13 @@ function Core.GetPlantableSeeds()
                 end
                 if not found then skip = true end
             end
-            
+
             if not skip then
                 table.insert(seeds, {name = seedName, item = item})
             end
         end
     end
-    
+
     return seeds
 end
 
@@ -412,80 +444,106 @@ function Core.GetEmptyPlotPositions()
     local positions = {}
     local garden = GetGarden()
     if not garden then return positions end
-    
-    local plot = garden:FindFirstChild("Plot") or garden
-    local soil = plot:FindFirstChild("Soil") or plot:FindFirstChild("Dirt")
-    
-    if soil then
-        for _, tile in pairs(soil:GetChildren()) do
-            if tile:IsA("BasePart") then
-                local hasPlant = false
-                for _, child in pairs(tile:GetChildren()) do
-                    if child.Name:find("Plant") or child.Name:find("Crop") then
-                        hasPlant = true
-                        break
+
+    local visual = garden:FindFirstChild("Visual")
+    if not visual then return positions end
+
+    local plants = garden:FindFirstChild("Plants")
+    local plantPositions = {}
+
+    if plants then
+        for _, plant in pairs(plants:GetChildren()) do
+            local success, cf, size = pcall(function()
+                return plant:GetBoundingBox()
+            end)
+            if success then
+                table.insert(plantPositions, {
+                    position = cf.Position,
+                    radius = math.max(size.X, size.Z) / 2 + 8
+                })
+            end
+        end
+    end
+
+    local function isEmpty(position)
+        local p = Vector2.new(position.X, position.Z)
+        for _, data in ipairs(plantPositions) do
+            local q = Vector2.new(data.position.X, data.position.Z)
+            if (p - q).Magnitude < data.radius then
+                return false
+            end
+        end
+        return true
+    end
+
+    for _, name in ipairs({"PlantAreaColumn1", "PlantAreaColumn2"}) do
+        local area = visual:FindFirstChild(name)
+        if area and area:IsA("BasePart") then
+            local size = area.Size
+            for x = -size.X / 2 + 4, size.X / 2 - 4, 6 do
+                for z = -size.Z / 2 + 4, size.Z / 2 - 4, 6 do
+                    local position = (area.CFrame * CFrame.new(x, 0, z)).Position
+                    if isEmpty(position) then
+                        table.insert(positions, position)
                     end
-                end
-                
-                if not hasPlant then
-                    table.insert(positions, tile.Position)
                 end
             end
         end
     end
-    
+
     return positions
 end
 
-function Core.PlantSeed(seedName, position)
+function Core.PlantSeed(seed, position)
+    local seedName = type(seed) == "table" and seed.name or seed
     Log("Planting: " .. seedName, "PLANT")
-    
-    local plantRemote = ReplicatedStorage:FindFirstChild("PlantSeed") 
+
+    if type(seed) == "table" then
+        EquipSeed(seed)
+    end
+
+    local controller = GetPlantController()
+    if controller and controller.TryPlantWithRay then
+        local ray = Ray.new(position + Vector3.new(0, 80, 0), Vector3.new(0, -200, 0))
+        local success = pcall(function()
+            controller:TryPlantWithRay(ray)
+        end)
+        if success then
+            return true
+        end
+    end
+
+    local plantRemote = ReplicatedStorage:FindFirstChild("PlantSeed")
         or ReplicatedStorage:FindFirstChild("Plant")
         or ReplicatedStorage:FindFirstChild("PlaceSeed")
-    
+
     if plantRemote then
         plantRemote:FireServer(seedName, position)
         return true
     end
-    
-    -- Try alternative method
-    local backpack = State.player:FindFirstChild("Backpack")
-    if backpack then
-        local seed = backpack:FindFirstChild(seedName .. " Seed")
-        if seed then
-            seed:Activate()
-            task.wait(0.5)
-        end
-    end
-    
+
     return false
 end
 
 function Core.PlantAll()
     local plantingConfig = Config["Planting"]
-    
+
     if not plantingConfig["Auto Plant"] then
         return
     end
-    
+
+    local garden = GetGarden()
+    if not garden then return end
+
+    local plants = garden:FindFirstChild("Plants")
     local seeds = Core.GetPlantableSeeds()
     if #seeds == 0 then
         Log("No seeds available", "PLANT")
         return
     end
-    
-    local positions = Core.GetEmptyPlotPositions()
-    if #positions == 0 then
-        Log("No empty plot positions", "PLANT")
-        return
-    end
-    
+
     local planted = 0
     for _, seed in ipairs(seeds) do
-        if planted >= #positions then break end
-        
-        -- Check Plant Plan
         local skip = false
         local plantPlan = plantingConfig["Plant Plan"]
         if plantPlan[seed.name] then
@@ -496,16 +554,28 @@ function Core.PlantAll()
                 skip = true
             end
         end
-        
+
         if not skip then
-            local pos = positions[planted + 1]
-            if Core.PlantSeed(seed.name, pos) then
-                planted = planted + 1
-                task.wait(0.3)
+            local positions = Core.GetEmptyPlotPositions()
+            if #positions == 0 then
+                Log("No empty plot positions", "PLANT")
+                break
+            end
+
+            for _, position in ipairs(positions) do
+                local before = plants and #plants:GetChildren() or 0
+                if Core.PlantSeed(seed, position) then
+                    task.wait(0.6)
+                    local after = plants and #plants:GetChildren() or 0
+                    if after > before then
+                        planted = planted + 1
+                        break
+                    end
+                end
             end
         end
     end
-    
+
     if planted > 0 then
         Log("Planted " .. planted .. " seeds", "PLANT")
     end
