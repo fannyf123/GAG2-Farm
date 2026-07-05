@@ -314,37 +314,37 @@ end
 
 function Core.SellAll()
     Log("Selling all items...", "SELL")
-    
-    -- Find sell NPC or shop
-    local sellRemote = ReplicatedStorage:FindFirstChild("SellAll") 
+
+    local sharedModules = ReplicatedStorage:FindFirstChild("SharedModules")
+    local networkingModule = sharedModules and sharedModules:FindFirstChild("Networking")
+    if networkingModule then
+        local success, networking = pcall(require, networkingModule)
+        local sellAll = success and networking.NPCS and networking.NPCS.SellAll
+        if sellAll and sellAll.Fire then
+            local fired = pcall(function()
+                sellAll:Fire()
+            end)
+            if fired then
+                State.lastSellTime = os.time()
+                Log("Sold all items", "SELL")
+                return true
+            end
+        end
+    end
+
+    local sellRemote = ReplicatedStorage:FindFirstChild("SellAll")
         or ReplicatedStorage:FindFirstChild("Sell")
         or ReplicatedStorage:FindFirstChild("SellItems")
-    
+
     if sellRemote then
         sellRemote:FireServer()
         State.lastSellTime = os.time()
         Log("Sold all items", "SELL")
         return true
     end
-    
-    -- Try to find and go to sell NPC
-    local sellNPC = Workspace:FindFirstChild("SellNPC") or Workspace:FindFirstChild("Shop")
-    if sellNPC and State.rootPart then
-        local npcRoot = sellNPC:FindFirstChild("HumanoidRootPart") or sellNPC.PrimaryPart
-        if npcRoot then
-            State.rootPart.CFrame = npcRoot.CFrame
-            task.wait(1)
-            
-            -- Try to interact
-            local clickDetector = sellNPC:FindFirstChild("ClickDetector")
-            if clickDetector then
-                fireclickdetector(clickDetector)
-            end
-        end
-    end
-    
+
     State.lastSellTime = os.time()
-    return true
+    return false
 end
 
 -- ============================================
