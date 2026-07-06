@@ -248,22 +248,344 @@ local function validateConfig()
         Debug.Log("WARN", "Config missing")
         return
     end
-    local expectedSections = {
-        "Harvest", "Planting", "Money", "Never Sell", "Pets", "Gear", "Event Seeds", "Mail", "Misc", "Friends", "Performance", "Debug"
-    }
-    for _, section in ipairs(expectedSections) do
-        if type(config[section]) ~= "table" then
-            Debug.Log("WARN", "missing config section", section)
+
+    local function checkType(value, expectedType, section, key)
+        if value == nil then
+            return true
+        end
+        local actualType = type(value)
+        if expectedType == "number" then
+            if actualType ~= "number" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected number, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "string" then
+            if actualType ~= "string" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected string, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "boolean" then
+            if actualType ~= "boolean" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected boolean, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "table" then
+            if actualType ~= "table" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected table, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "list" then
+            if actualType ~= "table" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected list/table, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "map" then
+            if actualType ~= "table" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected map/table, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "string_or_list" then
+            if actualType ~= "string" and actualType ~= "table" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected string or list, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "number_or_list" then
+            if actualType ~= "number" and actualType ~= "table" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected number or list, got " .. actualType)
+                return false
+            end
+        elseif expectedType == "list_or_map" then
+            if actualType ~= "table" then
+                Debug.Log("CONFIG", section .. "." .. key .. " expected table, got " .. actualType)
+                return false
+            end
+        end
+        return true
+    end
+
+    local function validateSection(sectionName, schema)
+        local section = config[sectionName]
+        if type(section) ~= "table" then
+            Debug.Log("WARN", "missing config section", sectionName)
+            return
+        end
+        for _, entry in ipairs(schema) do
+            local key = entry[1]
+            local expectedType = entry[2]
+            local defaultValue = entry[3]
+            local value = section[key]
+            if value ~= nil then
+                checkType(value, expectedType, sectionName, key)
+            end
         end
     end
+
+    local harvestSchema = {
+        {"Auto Harvest", "boolean", true},
+        {"Sell At", "number", 85},
+        {"Sell Every", "number", 40},
+        {"Only Harvest", "list", {}},
+        {"Don't Harvest", "list", {}},
+        {"Wait For Mutation", "list", {"Bamboo", "Mushroom"}},
+    }
+    validateSection("Harvest", harvestSchema)
+
+    local plantingSchema = {
+        {"Auto Plant", "boolean", true},
+        {"Plant Plan", "map", {}},
+        {"Only Plant", "list", {}},
+        {"Minimum Seed", "string", "Bamboo"},
+        {"Layout", "string", "compact"},
+        {"Don't Plant", "list", {}},
+        {"Don't Buy", "list", {}},
+        {"Keep Seeds", "map", {}},
+        {"Plant Limit", "number", 0},
+        {"Never Shovel", "list", {}},
+        {"Shovel Up To", "string", ""},
+        {"Buy Seeds", "map", {}},
+    }
+    validateSection("Planting", plantingSchema)
+
+    local moneySchema = {
+        {"Keep Cash", "number", 15000},
+        {"Auto Expand Plot", "boolean", true},
+        {"Max Expansions", "number", 3},
+        {"Expand If Over", "number", 1500000},
+        {"Auto Replace Plants", "boolean", true},
+    }
+    validateSection("Money", moneySchema)
+
+    local neverSellSchema = {
+        {"By Mutation", "list", {}},
+        {"By Fruit", "list", {}},
+        {"Exact", "list", {}},
+    }
+    validateSection("Never Sell", neverSellSchema)
+
+    local petsSchema = {
+        {"Buy", "list_or_map", {}},
+        {"Equip", "list_or_map", {}},
+        {"Auto Buy Slots", "boolean", true},
+        {"Max Pet Slots", "number", 6},
+    }
+    validateSection("Pets", petsSchema)
+
+    local gearSchema = {
+        {"Auto Buy", "boolean", true},
+        {"Keep Cash", "number", 15000},
+        {"Sprinkler Coverage", "string", "concentrate"},
+        {"Place Sprinklers", "map", {}},
+        {"Best Sprinkler Up To", "string", "Rare Sprinkler"},
+        {"Keep Gear", "map", {}},
+        {"Buy Gear", "list", {}},
+    }
+    validateSection("Gear", gearSchema)
+
+    local eventSeedsSchema = {
+        {"Auto Claim", "boolean", true},
+    }
+    validateSection("Event Seeds", eventSeedsSchema)
+
+    local mailSchema = {
+        {"Auto Claim", "boolean", true},
+        {"Send To", "string", ""},
+        {"Send Every", "number", 0},
+        {"Send", "list", {}},
+    }
+    validateSection("Mail", mailSchema)
+
+    local miscSchema = {
+        {"Auto Return To Garden", "boolean", true},
+        {"Show Stats", "boolean", true},
+        {"Hide Game UI", "boolean", false},
+        {"Show Console", "boolean", false},
+        {"Smart Travel", "boolean", true},
+        {"Auto Daily Deal", "boolean", true},
+        {"Walk Speed", "number", 0},
+        {"Slide Speed", "number", 30},
+        {"Fast Travel", "boolean", false},
+        {"Teleport", "boolean", true},
+    }
+    validateSection("Misc", miscSchema)
+
+    local friendsSchema = {
+        {"Auto Accept", "boolean", false},
+        {"Auto Send", "boolean", false},
+    }
+    validateSection("Friends", friendsSchema)
+
+    local performanceSchema = {
+        {"FPS Cap", "number", 0},
+        {"Low Graphics", "boolean", true},
+        {"Remove Other Gardens", "boolean", true},
+        {"Hide Crop Visuals", "boolean", true},
+        {"Hide Fruit Visuals", "boolean", true},
+        {"Hide Players", "boolean", true},
+    }
+    validateSection("Performance", performanceSchema)
+
+    local debugSchema = {
+        {"Log To File", "boolean", true},
+        {"Console", "boolean", true},
+    }
+    validateSection("Debug", debugSchema)
+
+    local harvest = type(config["Harvest"]) == "table" and config["Harvest"] or {}
+    local planting = type(config["Planting"]) == "table" and config["Planting"] or {}
+    local money = type(config["Money"]) == "table" and config["Money"] or {}
     local misc = type(config["Misc"]) == "table" and config["Misc"] or {}
     local debugConfig = type(config["Debug"]) == "table" and config["Debug"] or {}
+    local mail = type(config["Mail"]) == "table" and config["Mail"] or {}
+    local gear = type(config["Gear"]) == "table" and config["Gear"] or {}
+    local pets = type(config["Pets"]) == "table" and config["Pets"] or {}
+    local performance = type(config["Performance"]) == "table" and config["Performance"] or {}
+
     if misc["Show Console"] ~= nil and debugConfig["Console"] ~= nil then
         Debug.Log("CONFIG", "Console config split", {
             MiscShowConsole = misc["Show Console"],
             DebugConsole = debugConfig["Console"],
         })
     end
+
+    if harvest["Auto Harvest"] == false and harvest["Sell At"] ~= nil then
+        Debug.Log("CONFIG", "Auto Harvest=false disables selling too, Sell At ignored", {
+            AutoHarvest = harvest["Auto Harvest"],
+            SellAt = harvest["Sell At"],
+        })
+    end
+
+    if planting["Auto Plant"] == false and planting["Plant Plan"] ~= nil then
+        local planCount = 0
+        for _ in pairs(planting["Plant Plan"]) do planCount += 1 end
+        if planCount > 0 then
+            Debug.Log("CONFIG", "Auto Plant=false, Plant Plan present but planting disabled")
+        end
+    end
+
+    local dontPlant = planting["Don't Plant"]
+    local buySeeds = planting["Buy Seeds"]
+    if type(dontPlant) == "table" and type(buySeeds) == "table" then
+        for _, name in ipairs(dontPlant) do
+            if buySeeds[name] ~= nil then
+                Debug.Log("CONFIG", "Don't Plant conflicts with Buy Seeds", { Seed = name })
+            end
+        end
+    end
+
+    local onlyPlant = planting["Only Plant"]
+    if type(onlyPlant) == "table" and type(buySeeds) == "table" then
+        for _, name in ipairs(onlyPlant) do
+            if buySeeds[name] ~= nil then
+                Debug.Log("CONFIG", "Only Plant + Buy Seeds conflict (Buy Seeds never planted)", { Seed = name })
+            end
+        end
+    end
+
+    local plantLimit = planting["Plant Limit"]
+    if type(plantLimit) == "number" and plantLimit > 0 and planting["Auto Plant"] == false then
+        Debug.Log("CONFIG", "Plant Limit set but Auto Plant=false")
+    end
+
+    local keepCash = money["Keep Cash"]
+    local expandIfOver = money["Expand If Over"]
+    if type(keepCash) == "number" and type(expandIfOver) == "number" and expandIfOver < keepCash then
+        Debug.Log("CONFIG", "Expand If Over < Keep Cash, expansion may never trigger", {
+            KeepCash = keepCash,
+            ExpandIfOver = expandIfOver,
+        })
+    end
+
+    local gearKeepCash = gear["Keep Cash"]
+    if type(keepCash) == "number" and type(gearKeepCash) == "number" then
+        if gearKeepCash < keepCash then
+            Debug.Log("CONFIG", "Gear Keep Cash < Money Keep Cash, gear purchases may conflict", {
+                MoneyKeepCash = keepCash,
+                GearKeepCash = gearKeepCash,
+            })
+        end
+    end
+
+    if mail["Send To"] == "" or mail["Send To"] == nil then
+        local sendList = mail["Send"]
+        if type(sendList) == "table" then
+            local count = 0
+            for _ in ipairs(sendList) do count += 1 end
+            if count > 0 then
+                Debug.Log("CONFIG", "Mail Send list populated but Send To is empty, sending disabled")
+            end
+        end
+    end
+
+    if mail["Send To"] and mail["Send To"] ~= "" then
+        local sendList = mail["Send"]
+        if type(sendList) ~= "table" or #sendList == 0 then
+            Debug.Log("CONFIG", "Mail Send To set but Send list is empty, nothing to send")
+        end
+    end
+
+    local walkSpeed = misc["Walk Speed"]
+    if type(walkSpeed) == "number" and walkSpeed ~= 0 and (walkSpeed < 16 or walkSpeed > 35) then
+        Debug.Log("CONFIG", "Walk Speed out of safe range (0 or 16-35)", { WalkSpeed = walkSpeed })
+    end
+
+    local slideSpeed = misc["Slide Speed"]
+    if type(slideSpeed) == "number" and (slideSpeed < 10 or slideSpeed > 150) then
+        Debug.Log("CONFIG", "Slide Speed out of safe range (10-150)", { SlideSpeed = slideSpeed })
+    end
+
+    local maxPetSlots = pets["Max Pet Slots"]
+    if type(maxPetSlots) == "number" and (maxPetSlots < 3 or maxPetSlots > 6) then
+        Debug.Log("CONFIG", "Max Pet Slots out of range (3-6)", { MaxPetSlots = maxPetSlots })
+    end
+
+    local fpsCap = performance["FPS Cap"]
+    if type(fpsCap) == "number" and fpsCap < 0 then
+        Debug.Log("CONFIG", "FPS Cap negative, treating as 0", { FPSCap = fpsCap })
+    end
+
+    local function listHasEmptyStrings(list, section, key)
+        if type(list) ~= "table" then return end
+        for i, v in ipairs(list) do
+            if type(v) == "string" and v == "" then
+                Debug.Log("CONFIG", section .. "." .. key .. " has empty string at index " .. i)
+            end
+        end
+    end
+    listHasEmptyStrings(harvest["Only Harvest"], "Harvest", "Only Harvest")
+    listHasEmptyStrings(harvest["Don't Harvest"], "Harvest", "Don't Harvest")
+    listHasEmptyStrings(harvest["Wait For Mutation"], "Harvest", "Wait For Mutation")
+    listHasEmptyStrings(planting["Only Plant"], "Planting", "Only Plant")
+    listHasEmptyStrings(planting["Don't Plant"], "Planting", "Don't Plant")
+    listHasEmptyStrings(planting["Don't Buy"], "Planting", "Don't Buy")
+    listHasEmptyStrings(planting["Never Shovel"], "Planting", "Never Shovel")
+
+    local function mapHasZeroValues(map, section, key)
+        if type(map) ~= "table" then return end
+        for k, v in pairs(map) do
+            if type(v) == "number" and v <= 0 then
+                Debug.Log("CONFIG", section .. "." .. key .. " has zero/negative value for " .. tostring(k))
+            end
+        end
+    end
+    mapHasZeroValues(planting["Plant Plan"], "Planting", "Plant Plan")
+    mapHasZeroValues(planting["Keep Seeds"], "Planting", "Keep Seeds")
+    mapHasZeroValues(planting["Buy Seeds"], "Planting", "Buy Seeds")
+    mapHasZeroValues(gear["Place Sprinklers"], "Gear", "Place Sprinklers")
+    mapHasZeroValues(gear["Keep Gear"], "Gear", "Keep Gear")
+
+    local function listHasNumbers(list, section, key)
+        if type(list) ~= "table" then return end
+        for i, v in ipairs(list) do
+            if type(v) == "number" then
+                Debug.Log("CONFIG", section .. "." .. key .. " has number at index " .. i .. " (expected string name)", { Value = v })
+            end
+        end
+    end
+    listHasNumbers(harvest["Only Harvest"], "Harvest", "Only Harvest")
+    listHasNumbers(planting["Only Plant"], "Planting", "Only Plant")
+    listHasNumbers(gear["Buy Gear"], "Gear", "Buy Gear")
+
+    Debug.Log("CONFIG", "validation complete")
 end
 
 local function getGardenOwner(garden)
